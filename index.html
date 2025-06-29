@@ -1,0 +1,289 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Nest Hub Fullscreen UI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }html, body {
+  height: 100%;
+  font-family: "Google Sans", sans-serif;
+}
+
+body.light {
+  background: #f3f3f3;
+  color: #000;
+}
+
+body.dark {
+  background: #121212;
+  color: #fff;
+}
+
+.fullscreen-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 6px 12px;
+  font-size: 14px;
+  background: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.hub {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-bar {
+  text-align: right;
+  padding: 8px 20px;
+  font-size: 14px;
+  color: inherit;
+  background: inherit;
+}
+
+.nav {
+  display: flex;
+  padding: 10px 20px;
+  font-size: 14px;
+  background: inherit;
+  flex-wrap: wrap;
+}
+
+.nav div {
+  margin-right: 20px;
+  color: inherit;
+  cursor: pointer;
+  padding-bottom: 2px;
+}
+
+.nav div.active {
+  font-weight: bold;
+  border-bottom: 2px solid #4285f4;
+}
+
+.page {
+  display: none;
+  flex: 1;
+  padding: 20px;
+  background: inherit;
+}
+
+.page.active {
+  display: block;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.card {
+  border-radius: 15px;
+  background: #f0f0f0;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.music {
+  grid-column: span 2;
+}
+
+.music img {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 10px;
+}
+
+.music-controls button,
+.button,
+.popup-btn {
+  margin: 5px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #4285f4;
+  color: white;
+  font-size: 14px;
+}
+
+.hidden {
+  display: none;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  z-index: 9999;
+}
+
+.popup h2 {
+  margin-bottom: 10px;
+}
+
+  </style>
+</head>
+<body class="light">
+  <button class="fullscreen-btn" onclick="toggleFullscreen()">Go Fullscreen</button>
+  <div class="hub">
+    <div class="top-bar" id="clock">8:00</div>
+    <div class="nav">
+      <div class="active" onclick="showPage('morning')">Your morning</div>
+      <div onclick="showPage('home')">Home control</div>
+      <div onclick="showPage('media')">Media</div>
+      <div onclick="showPage('communicate')">Communicate</div>
+      <div onclick="showPage('discover')">Discover</div>
+      <div onclick="showPage('sleep')">Sleep</div>
+    </div><div id="morning" class="page active">
+  <div class="content">
+    <div class="card music">
+      <img src="SleepNow.png" alt="SleepNow Icon">
+      <div>SleepNow</div>
+      <button class="button" onclick="showPage('sleep')">Sleep</button>
+    </div>
+    <div class="card">
+      <strong>On · 80%</strong>
+      <h3>Lamp</h3>
+      <small>Living Room</small>
+    </div>
+    <div class="card">
+      <div style="font-size: 24px;">☀️ 68°</div>
+      <small>76° / 65°</small>
+    </div>
+    <div class="card">
+      <div style="font-size: 20px;">⏱ 8:44</div>
+      <small>Timer</small>
+    </div>
+  </div>
+</div>
+
+<div id="home" class="page">
+  <div class="card">
+    <img src="home.png" alt="Google Home" width="60">
+    <div>Google Home</div>
+  </div>
+  <div class="card">
+    <img src="assistant.png" alt="Google Assistant" width="60">
+    <div>Google Assistant</div>
+  </div>
+</div>
+
+<div id="media" class="page">
+  <div class="card">
+    <h3>YouTube Music</h3>
+    <button class="button" onclick="launchApp('com.google.android.apps.youtube.music')">Launch</button>
+  </div>
+  <div class="card">
+    <h3>YouTube</h3>
+    <button class="button" onclick="confirmOldDevice('https://www.youtube.com')">Launch</button>
+  </div>
+  <div class="card">
+    <h3>Netflix</h3>
+    <button class="button" onclick="launchApp('com.netflix.mediaclient')">Launch</button>
+  </div>
+  <div class="card">
+    <h3>Party Mode!</h3>
+    <button class="button" onclick="launchApp('com.wemesh.android')">Launch</button>
+  </div>
+</div>
+
+<div id="communicate" class="page">
+  <div class="card">Coming soon...</div>
+</div>
+
+<div id="discover" class="page">
+  <div class="card">Discover new features</div>
+</div>
+
+<div id="sleep" class="page">
+  <div class="card">
+    <h3>Sleep Mode:</h3>
+    <button class="button" onclick="setTheme('dark')">DARK</button>
+    <button class="button" onclick="setTheme('light')">LIGHT</button>
+  </div>
+  <div class="card">
+    <h3>Wake in the morning?</h3>
+    <button class="button" onclick="launchApp('com.google.android.deskclock')">Launch Clock App</button>
+  </div>
+  <div class="card">
+    <h3>Sleep Noises</h3>
+    <button class="button" onclick="confirmOldDevice('https://www.youtube.com/live/yOuYY4AL_1U?si=wdtJVXvXHNOdkKjr')">Launch</button>
+  </div>
+</div>
+
+  </div>  <div id="popup" class="popup hidden">
+    <h2>Do you have an old device?</h2>
+    <button class="popup-btn" onclick="handleOldDevice(true)">YES</button>
+    <button class="popup-btn" onclick="handleOldDevice(false)">NO</button>
+  </div>  <script>
+    let targetURL = "";
+
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      document.getElementById("clock").textContent = `${hours}:${minutes}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function toggleFullscreen() {
+      const elem = document.documentElement;
+      if (!document.fullscreenElement) {
+        elem.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    function showPage(id) {
+      document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+      document.querySelectorAll(".nav div").forEach(tab => tab.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      document.querySelector(`.nav div[onclick*='${id}']`).classList.add("active");
+    }
+
+    function launchApp(packageName) {
+      window.location.href = `intent://${packageName}#Intent;scheme=package;end`;
+    }
+
+    function confirmOldDevice(url) {
+      targetURL = url;
+      document.getElementById("popup").classList.remove("hidden");
+    }
+
+    function handleOldDevice(isOld) {
+      document.getElementById("popup").classList.add("hidden");
+      if (isOld) {
+        window.open(targetURL, "_blank");
+      } else {
+        window.location.href = targetURL;
+      }
+    }
+
+    function setTheme(mode) {
+      document.body.className = mode;
+    }
+  </script></body>
+</html>
