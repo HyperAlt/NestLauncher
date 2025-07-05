@@ -1,289 +1,155 @@
 <!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Google Nest Hub Fullscreen UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Google Nest Hub UI</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }html, body {
-  height: 100%;
-  font-family: "Google Sans", sans-serif;
-}
-
-body.light {
-  background: #f3f3f3;
-  color: #000;
-}
-
-body.dark {
-  background: #121212;
-  color: #fff;
-}
-
-.fullscreen-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 6px 12px;
-  font-size: 14px;
-  background: #4285f4;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  z-index: 10;
-}
-
-.hub {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.top-bar {
-  text-align: right;
-  padding: 8px 20px;
-  font-size: 14px;
-  color: inherit;
-  background: inherit;
-}
-
-.nav {
-  display: flex;
-  padding: 10px 20px;
-  font-size: 14px;
-  background: inherit;
-  flex-wrap: wrap;
-}
-
-.nav div {
-  margin-right: 20px;
-  color: inherit;
-  cursor: pointer;
-  padding-bottom: 2px;
-}
-
-.nav div.active {
-  font-weight: bold;
-  border-bottom: 2px solid #4285f4;
-}
-
-.page {
-  display: none;
-  flex: 1;
-  padding: 20px;
-  background: inherit;
-}
-
-.page.active {
-  display: block;
-}
-
-.content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-.card {
-  border-radius: 15px;
-  background: #f0f0f0;
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.music {
-  grid-column: span 2;
-}
-
-.music img {
-  width: 60px;
-  height: 60px;
-  margin-bottom: 10px;
-}
-
-.music-controls button,
-.button,
-.popup-btn {
-  margin: 5px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  background: #4285f4;
-  color: white;
-  font-size: 14px;
-}
-
-.hidden {
-  display: none;
-}
-
-.popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
-  z-index: 9999;
-}
-
-.popup h2 {
-  margin-bottom: 10px;
-}
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Google Sans', sans-serif; background: #f3f3f3; overflow: hidden; }
+    .hub { display: flex; flex-direction: column; height: 100vh; background: white; }
+    .top-bar { text-align: right; padding: 8px 20px; font-size: 14px; color: #666; background: #fff; }
+    .nav { display: flex; padding: 10px 20px; font-size: 14px; background: #f6f6f6; overflow-x: auto; }
+    .nav div { margin-right: 20px; color: #888; cursor: pointer; }
+    .nav div.active { font-weight: bold; color: #000; border-bottom: 2px solid #4285f4; }
+    .content { flex: 1; padding: 20px; overflow-y: auto; display: none; }
+    .content.active { display: block; }
+    .card { border-radius: 15px; background: #f0f0f0; padding: 15px; margin-bottom: 15px; }
+    .music img { width: 60px; height: 60px; background: #bbb; margin-bottom: 10px; }
+    .music-controls button { margin: 0 10px; background: none; border: none; font-size: 18px; cursor: pointer; }
+    .sleep-options button, .nav-buttons button { margin: 5px; padding: 10px 15px; font-size: 14px; border: none; border-radius: 8px; background: #4285f4; color: white; cursor: pointer; }
+    .store-card { background: #fff; border: 1px solid #ccc; padding: 10px; border-radius: 10px; margin-bottom: 20px; }
+    .store-card h4 { margin-bottom: 4px; }
+    .store-card small { color: #777; display: block; margin-bottom: 6px; }
+    .store-card p { margin: 4px 0 10px; font-size: 13px; color: #555; }
+    .store-card button { background: #34a853; color: white; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+    .store-category { font-weight: bold; margin: 20px 0 10px; font-size: 16px; color: #444; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
   </style>
 </head>
-<body class="light">
-  <button class="fullscreen-btn" onclick="toggleFullscreen()">Go Fullscreen</button>
-  <div class="hub">
-    <div class="top-bar" id="clock">8:00</div>
-    <div class="nav">
-      <div class="active" onclick="showPage('morning')">Your morning</div>
-      <div onclick="showPage('home')">Home control</div>
-      <div onclick="showPage('media')">Media</div>
-      <div onclick="showPage('communicate')">Communicate</div>
-      <div onclick="showPage('discover')">Discover</div>
-      <div onclick="showPage('sleep')">Sleep</div>
-    </div><div id="morning" class="page active">
-  <div class="content">
+<body>
+<div class="hub">
+  <div class="top-bar" id="clock">8:00</div>
+  <div class="nav">
+    <div class="active" onclick="switchTab('morning')">Your morning</div>
+    <div onclick="switchTab('home')">Home control</div>
+    <div onclick="switchTab('media')">Media</div>
+    <div onclick="switchTab('sleep')">Sleep</div>
+    <div onclick="switchTab('discover')">Discover</div>
+    <div onclick="switchTab('store')">Store</div>
+  </div>  <div id="morning" class="content active">
     <div class="card music">
-      <img src="SleepNow.png" alt="SleepNow Icon">
+      <img src="SleepNow.png" alt="SleepNow">
       <div>SleepNow</div>
-      <button class="button" onclick="showPage('sleep')">Sleep</button>
+      <div class="music-controls">
+        <button onclick="switchTab('sleep')">Sleep Mode</button>
+      </div>
+    </div>
+    <div class="card light-card">Lamp is On · 80%</div>
+    <div class="card weather-card">☀️ 68° · 76° / 65°</div>
+    <div class="card timer-card">⏱ 8:44 Timer</div>
+  </div>  <div id="home" class="content">
+    <div class="card">
+      <img src="home.png" alt="Home Icon" style="height:50px">
+      <p>Home Control Panel</p>
+    </div>
+  </div>  <div id="media" class="content">
+    <div class="card nav-buttons">
+      <button onclick="openApp('com.google.android.apps.youtube.music')">YouTube Music</button>
+      <button onclick="handleYouTube()">YouTube</button>
+      <button onclick="openApp('com.netflix.mediaclient')">Netflix</button>
+      <button onclick="openApp('com.wemesh.android')">Party Mode</button>
+    </div>
+  </div>  <div id="sleep" class="content">
+    <div class="card">
+      <h2>Sleep Mode</h2>
+      <button onclick="toggleTheme('dark')">DARK</button>
+      <button onclick="toggleTheme('light')">LIGHT</button>
     </div>
     <div class="card">
-      <strong>On · 80%</strong>
-      <h3>Lamp</h3>
-      <small>Living Room</small>
+      <h3>Wake in the morning? Don't worry!</h3>
+      <a href="intent://clock/#Intent;package=com.google.android.deskclock;scheme=https;end">
+        <button>Launch Clock App</button>
+      </a>
     </div>
     <div class="card">
-      <div style="font-size: 24px;">☀️ 68°</div>
-      <small>76° / 65°</small>
+      <h3>Sleep Noises</h3>
+      <button onclick="handleSleepNoise()">Launch</button>
     </div>
+  </div>  <div id="discover" class="content">
     <div class="card">
-      <div style="font-size: 20px;">⏱ 8:44</div>
-      <small>Timer</small>
+      <img src="assistant.png" alt="Assistant Icon" style="height:50px">
+      <p>Discover new assistant features here.</p>
+    </div>
+  </div>  <div id="store" class="content">
+    <div class="store-category">Tools</div>
+    <div class="store-card">
+      <h4>Clock</h4>
+      <small>By Google</small>
+      <p>Set alarms, timers, and track time easily with the official Google Clock app.</p>
+      <a href="https://play.google.com/store/apps/details?id=com.google.android.deskclock" target="_blank"><button>DOWNLOAD</button></a>
+    </div>
+    <div class="store-category">Entertainment</div>
+    <div class="store-card">
+      <h4>YouTube</h4>
+      <small>By Google</small>
+      <p>Watch and share your favorite videos with the YouTube app for Android.</p>
+      <a href="https://play.google.com/store/apps/details?id=com.google.android.youtube" target="_blank"><button>DOWNLOAD</button></a>
+    </div>
+    <div class="store-card">
+      <h4>YouTube Music</h4>
+      <small>By Google</small>
+      <p>Stream and discover music personalized for you with YouTube Music.</p>
+      <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.youtube.music" target="_blank"><button>DOWNLOAD</button></a>
+    </div>
+    <div class="store-category">Social & Party</div>
+    <div class="store-card">
+      <h4>Rave (Party Mode)</h4>
+      <small>By Rave Inc.</small>
+      <p>Watch content together with friends while chatting and reacting live.</p>
+      <a href="https://play.google.com/store/apps/details?id=com.wemesh.android" target="_blank"><button>DOWNLOAD</button></a>
     </div>
   </div>
-</div>
+</div><script>
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours().toString();
+  const m = now.getMinutes().toString().padStart(2, '0');
+  document.getElementById("clock").textContent = `${h}:${m}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
 
-<div id="home" class="page">
-  <div class="card">
-    <img src="home.png" alt="Google Home" width="60">
-    <div>Google Home</div>
-  </div>
-  <div class="card">
-    <img src="assistant.png" alt="Google Assistant" width="60">
-    <div>Google Assistant</div>
-  </div>
-</div>
+function switchTab(tabId) {
+  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+  document.querySelector(`#${tabId}`).classList.add('active');
+  document.querySelectorAll('.nav div').forEach(n => n.classList.remove('active'));
+  [...document.querySelectorAll('.nav div')].find(d => d.textContent.toLowerCase().includes(tabId)).classList.add('active');
+}
 
-<div id="media" class="page">
-  <div class="card">
-    <h3>YouTube Music</h3>
-    <button class="button" onclick="launchApp('com.google.android.apps.youtube.music')">Launch</button>
-  </div>
-  <div class="card">
-    <h3>YouTube</h3>
-    <button class="button" onclick="confirmOldDevice('https://www.youtube.com')">Launch</button>
-  </div>
-  <div class="card">
-    <h3>Netflix</h3>
-    <button class="button" onclick="launchApp('com.netflix.mediaclient')">Launch</button>
-  </div>
-  <div class="card">
-    <h3>Party Mode!</h3>
-    <button class="button" onclick="launchApp('com.wemesh.android')">Launch</button>
-  </div>
-</div>
+function openApp(packageName) {
+  window.location.href = `intent://#Intent;package=${packageName};scheme=https;end`;
+}
 
-<div id="communicate" class="page">
-  <div class="card">Coming soon...</div>
-</div>
+function handleYouTube() {
+  const old = confirm("Do you have an old device?");
+  if (old) {
+    window.open("youtube-embed.html", "_blank");
+  } else {
+    openApp("com.google.android.youtube");
+  }
+}
 
-<div id="discover" class="page">
-  <div class="card">Discover new features</div>
-</div>
+function handleSleepNoise() {
+  const old = confirm("Do you have an old device?");
+  const url = "https://www.youtube.com/live/yOuYY4AL_1U?si=wdtJVXvXHNOdkKjr";
+  if (old) {
+    window.open("sleepnoise.html", "_blank");
+  } else {
+    window.location.href = `intent://${url.replace("https://", "")}#Intent;package=com.google.android.youtube;scheme=https;end`;
+  }
+}
 
-<div id="sleep" class="page">
-  <div class="card">
-    <h3>Sleep Mode:</h3>
-    <button class="button" onclick="setTheme('dark')">DARK</button>
-    <button class="button" onclick="setTheme('light')">LIGHT</button>
-  </div>
-  <div class="card">
-    <h3>Wake in the morning?</h3>
-    <button class="button" onclick="launchApp('com.google.android.deskclock')">Launch Clock App</button>
-  </div>
-  <div class="card">
-    <h3>Sleep Noises</h3>
-    <button class="button" onclick="confirmOldDevice('https://www.youtube.com/live/yOuYY4AL_1U?si=wdtJVXvXHNOdkKjr')">Launch</button>
-  </div>
-</div>
-
-  </div>  <div id="popup" class="popup hidden">
-    <h2>Do you have an old device?</h2>
-    <button class="popup-btn" onclick="handleOldDevice(true)">YES</button>
-    <button class="popup-btn" onclick="handleOldDevice(false)">NO</button>
-  </div>  <script>
-    let targetURL = "";
-
-    function updateClock() {
-      const now = new Date();
-      const hours = now.getHours();
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      document.getElementById("clock").textContent = `${hours}:${minutes}`;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    function toggleFullscreen() {
-      const elem = document.documentElement;
-      if (!document.fullscreenElement) {
-        elem.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    }
-
-    function showPage(id) {
-      document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
-      document.querySelectorAll(".nav div").forEach(tab => tab.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-      document.querySelector(`.nav div[onclick*='${id}']`).classList.add("active");
-    }
-
-    function launchApp(packageName) {
-      window.location.href = `intent://${packageName}#Intent;scheme=package;end`;
-    }
-
-    function confirmOldDevice(url) {
-      targetURL = url;
-      document.getElementById("popup").classList.remove("hidden");
-    }
-
-    function handleOldDevice(isOld) {
-      document.getElementById("popup").classList.add("hidden");
-      if (isOld) {
-        window.open(targetURL, "_blank");
-      } else {
-        window.location.href = targetURL;
-      }
-    }
-
-    function setTheme(mode) {
-      document.body.className = mode;
-    }
-  </script></body>
+function toggleTheme(mode) {
+  document.body.style.background = mode === 'dark' ? '#000' : '#f3f3f3';
+}
+</script></body>
 </html>
